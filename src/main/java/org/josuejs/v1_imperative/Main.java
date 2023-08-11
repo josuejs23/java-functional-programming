@@ -1,4 +1,4 @@
-package org.josuejs.imperative;
+package org.josuejs.v1_imperative;
 import java.util.ArrayList;
 import java.util.List;
 public class Main {
