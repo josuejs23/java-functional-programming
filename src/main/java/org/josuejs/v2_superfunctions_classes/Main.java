@@ -32,38 +32,4 @@ public class Main {
         System.out.println("total = " + total);
     }
 
-    private List<Integer> getIntList(){
-        return List.of(1,2,3,4,5,6,7,8,9,10);
-    }
-
-    private List<Integer> filterEven(List<Integer> nums){
-        List<Integer> evenNumbers = new ArrayList<>();
-        for(Integer num : nums){
-            if( num % 2 == 0 ) evenNumbers.add(num);
-        }
-        return evenNumbers;
-    }
-    
-    private List<Integer> powerOfTwo(List<Integer> nums){
-        List<Integer> numbers = new ArrayList<>();
-        for(Integer num : nums){
-            numbers.add( num * num);
-        }
-        return numbers;
-    }
-
-    private List<Integer> showNumbers(List<Integer> nums){
-        for(Integer num : nums){
-            System.out.print("Num => " + num + "\n");
-        }
-        return nums;
-    }
-    
-    private int sumOfNums(List<Integer> nums){
-        int total = 0;
-        for( Integer num : nums){
-            total += num;
-        }
-        return  total;
-    }
 }
