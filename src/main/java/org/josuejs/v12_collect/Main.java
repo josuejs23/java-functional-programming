@@ -8,15 +8,16 @@ import java.util.stream.Stream;
 
 public class Main {
 
+    static List<Book>  books = Arrays.asList(
+            new Book("234-90", "Matrix", 2000, Genre.ACTION),
+            new Book("231-91", "Lord of the Ring", 2001, Genre.FANTASY),
+            new Book("212-90", "MIB", 2000, Genre.COMEDY),
+            new Book("211-00", "30 years on lonelyness", 2002, Genre.FANTASY),
+            new Book("211-00", "30 years on lonelyness", 2002, Genre.FANTASY)
+    );
     public static void main(String[] args) {
 
-        List<Book> books = Arrays.asList(
-                new Book("234-90", "Matrix", 2000, Genre.ACTION),
-                new Book("231-91", "Lord of the Ring", 2001, Genre.FANTASY),
-                new Book("212-90", "MIB", 2000, Genre.COMEDY),
-                new Book("211-00", "30 years on lonelyness", 2002, Genre.FANTASY),
-                new Book("211-00", "30 years on lonelyness", 2002, Genre.FANTASY)
-        );
+
 
 //        Set<Book> booksFiltred = books.stream()
 //                .filter( book -> book.getYear() == 2002)
@@ -116,10 +117,69 @@ public class Main {
 
         //Advanced Sorting
         books.stream()
-                .sorted(Comparator.comparing(Book::getName, Comparator.reverseOrder()).thenComparing(Book::getYear))
+                .sorted(
+                        Comparator.comparing(Book::getName, Comparator.reverseOrder())
+                                .thenComparing(Book::getYear))
                 .forEach(System.out::println);
-        
+
+        //Advanced Sorting
+        books.stream()
+                .sorted(
+                        Comparator.comparing(Book::getName, Comparator.reverseOrder())
+                                .thenComparing(Book::getYear))
+                .findFirst()
+                .filter( book -> book.getGenre() == Genre.ACTION  )
+                .map(Book::getName)
+                .ifPresentOrElse(
+                        System.out::println,
+                        ()->System.out.println("No es de fantasia")
+                );
+
+        List<Book>booksFound = List.of("asd").stream()
+                .map(Main::getById)
+                .flatMap(Optional::stream)
+                // To avoid this 2 lines
+                // .filter(Optional::isPresent)
+                // .map(Optional::get)
+                .toList();
+        System.out.println("booksFound = " + booksFound);
+
+        Map<Integer, String> result = books.stream().collect(Collectors.groupingBy(Book::getYear, Collectors.collectingAndThen(
+                Collectors.counting(), value -> value + " Books"
+        )));
+
+        System.out.println(result);
+
+        // Double collect and Combination
+
+        books.stream()
+                .map(Book::getYear)
+                .collect(Collectors.teeing(
+                        Collectors.maxBy(Integer::compare),
+                        Collectors.minBy(Integer::compare),
+                        (max, min) -> max.map(maxOptional -> maxOptional - min.get())
+                )).ifPresentOrElse(
+                        ((diff)-> System.out.println("Yars of diff "+ diff)),
+                        ()-> System.out.println("There is not diff")
+                );
+
+        // Filter and sort after recollect to map
+        LinkedHashMap<Genre, Long> resultFilterAndSorted = books.stream()
+                .collect(Collectors.groupingBy(Book::getGenre, Collectors.counting()))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue() > 1)
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (entry1, entry2) -> entry1, LinkedHashMap::new));
+        System.out.println("resultFilterAndSorted = " + resultFilterAndSorted);
+
     }
+
+    static Optional<Book> getById(String id){
+        return books.stream().filter( book -> book.getId().equals(id)).findFirst();
+    }
+
+
 
 
 }
